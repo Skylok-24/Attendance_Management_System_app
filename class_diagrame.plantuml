@@ -1,0 +1,63 @@
+@startuml
+
+class User {
+  - id : int
+  - first_name : String
+  - last_name : String
+  - email : String
+  - password : String
+  - status : Boolean
+}
+
+class Student {
+  - academicYear : String
+}
+
+class Teacher {
+  - department : String
+}
+
+class Admin {
+  - accessLevel : String
+}
+
+Student --|> User
+Teacher --|> User
+Admin --|> User
+
+
+class Module {
+  - name : String
+}
+
+class Session {
+  - room : string
+  - date : Date
+  - startTime : Time
+  - endTime : Time
+  - status : Boolean
+}
+
+class Attendance {
+  - id : int
+  - status : enum
+  - time : timestamp
+}
+
+class AbsenceJus {
+  - reason : String
+  - file : String
+  - submit_date : timestamp
+  - status : enum
+}
+
+Attendance "1" -- "1" AbsenceJus
+
+Teacher "*" -- "*" Module
+Teacher "1" -- "*" Session
+Module "1" -- "*" Session
+
+Student "1" -- "*" Attendance
+Session "1" -- "*" Attendance
+
+@enduml
