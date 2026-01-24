@@ -66,3 +66,4 @@ class AbsenceJus(models.Model) :
     )
     attendance = models.OneToOneField(Attendance,on_delete=models.CASCADE)
 
+
