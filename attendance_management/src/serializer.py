@@ -78,3 +78,19 @@ class ClassSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClassSession
         fields = ['id', 'room', 'date', 'start_time', 'end_time', 'module_details']
+
+
+class TeacherModuleSerializer(serializers.ModelSerializer):
+    sessions_count = serializers.IntegerField(source='classsession_set.count', read_only=True)
+
+    class Meta:
+        model = Module
+        fields = ['id', 'name', 'sessions_count']
+
+
+class TeacherSessionSerializer(serializers.ModelSerializer):
+    module_name = serializers.CharField(source='module.name', read_only=True)
+
+    class Meta:
+        model = ClassSession
+        fields = ['id', 'room', 'date', 'start_time', 'end_time', 'module_name']

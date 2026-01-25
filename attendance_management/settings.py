@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'attendance_management.src.apps.SrcConfig',
-    'rest_framework'
+    'rest_framework',
+'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [

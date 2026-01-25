@@ -6,10 +6,12 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view , permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User , Attendance , ClassSession
-from .serializer import UserSerializer ,ClassSessionSerializer, RegisterSerializer,MyTokenObtainPairSerializer, AttendanceSerializer
+from .models import User , Attendance , ClassSession ,Teacher , Module
+from .serializer import UserSerializer, ModuleSerializer , TeacherSessionSerializer , TeacherModuleSerializer ,ClassSessionSerializer, RegisterSerializer,MyTokenObtainPairSerializer, AttendanceSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
 
 def home(request):
     return HttpResponse("Hello from myapp 👋")
@@ -80,3 +82,45 @@ def get_today_sessions(request):
 
     serializer = ClassSessionSerializer(sessions, many=True)
     return Response(serializer.data)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+
+            token.blacklist()
+
+            return Response({"message": "Successfully logged out"}, status=205)
+        except Exception as e:
+            return Response({"error": "Invalid token"}, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_teacher_data(request):
+    user = request.user
+
+    if user.role != 'teacher':
+        return Response({"error": "Access denied"}, status=403)
+
+    try:
+        teacher = Teacher.objects.get(id=user.id)
+
+        my_modules = Module.objects.filter(teachers=teacher)
+
+        my_sessions = ClassSession.objects.filter(module__in=my_modules).order_by('date', 'start_time')
+
+        modules_data = ModuleSerializer(my_modules, many=True).data
+        sessions_data = ClassSessionSerializer(my_sessions, many=True).data
+
+        return Response({
+            "modules": modules_data,
+            "sessions": sessions_data
+        })
+
+    except Teacher.DoesNotExist:
+        return Response({"error": "Teacher profile not found"}, status=404)
