@@ -61,6 +61,7 @@ https://documenter.getpostman.com/view/45514706/2sBXVkCphd
 
 2.  **Activate Virtual Environment:**
     ```bash
+    python -m venv venv
     # On Windows:
     .\venv\Scripts\activate
     # On Mac/Linux:
